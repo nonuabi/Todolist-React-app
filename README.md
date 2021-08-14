@@ -2,10 +2,25 @@
 
 ## Features
 
-* Data fetched from the api (https://jsonplaceholder.typicode.com/todos)
+* Data fetched from this [api_url](https://jsonplaceholder.typicode.com/todos)
 * Add item to TODO List
 * Update item from TODO List
 * Delete item from TODO List
+
+## Preview
+
+ * Add new task input
+ * Update task input
+ 
+    ![](src/img/form.jpg)
+   
+ * Task List
+ 
+    ![](src/img/item_list.jpg)
+    
+ * Complete Page
+ 
+    ![](src/img/full.jpg)
 
 ## How To Install
 
