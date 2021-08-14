@@ -1,4 +1,3 @@
-import { indexOf } from "lodash";
 import React, { useEffect, useState } from "react";
 import "./App.css";
 
@@ -8,8 +7,8 @@ function App() {
   const [description, setDescription] = useState("");
   const [update, setUpdate] = useState({
     description: "",
-    number: 0,
-    id: 0,
+    number: -1,
+    id: -1,
   });
   useEffect(() => {
     handleFetchData();
@@ -43,131 +42,188 @@ function App() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    let res = await fetch(api_url, {
-      method: "POST",
-      body: JSON.stringify({
-        title: description,
-        complete: false,
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    let dataJson = await res.json();
-    if (dataJson) {
-      console.log("Post resquest data ", dataJson);
-      data.unshift(dataJson);
-      console.log(typeof dataJson);
-      console.log(typeof data);
-
-      setData([...data]);
-
-      console.log("Post resquest data ", data);
+    if (description.length <= 0) {
+      alert("New Task Field is Emplty");
     } else {
-      console.log("error put");
+      let res = await fetch(api_url, {
+        method: "POST",
+        body: JSON.stringify({
+          title: description,
+          complete: false,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      });
+      let dataJson = await res.json();
+
+      if (dataJson) {
+        data.unshift(dataJson);
+        setData([...data]);
+      } else {
+        alert("Server Error!");
+      }
     }
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
     const { description, id, number } = update;
-    let res = await fetch(api_url + `/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({
-        id,
-        title: description,
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    let dataJson = await res.json();
-    if (dataJson) {
-      data[number - 1] = dataJson;
-      setData([...data]);
-      console.log("put resquest data ", dataJson);
+    if (description.length > 0 || id !== -1 || number !== -1) {
+      let res = await fetch(api_url + `/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          id,
+          title: description,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      });
+      let dataJson = await res.json();
+      if (dataJson) {
+        data[number - 1] = dataJson;
+        setData([...data]);
+      } else {
+        alert("Server Error!");
+      }
     } else {
-      console.log("error put");
+      if (description.length <= 0) {
+        alert("Update Field Empty!");
+      } else if (number === -1) {
+        alert("Task No Field Empty");
+      } else if (id === -1) {
+        alert("Task ID Field Empty");
+      }
     }
   };
 
-  console.log("->", data);
   return (
-    <div className="App">
-      <h1>ToDO List</h1>
-      <div>
-        <form>
-          <input
-            id="des-input"
-            type="text"
-            name="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What do you need to do ?"
-            required
-          />
-          <button id="add-btn" type="submit" onClick={(e) => handleCreate(e)}>
-            Add a task
-          </button>
-        </form>
-        <form>
-          <input
-            id="des-input"
-            type="text"
-            name="description"
-            value={update.description}
-            onChange={handleChange}
-            placeholder="want to update"
-            required
-          />
-          <input
-            type="number"
-            name="id"
-            value={update.id}
-            onChange={handleChange}
-          />
-          <input
-            type="number"
-            name="number"
-            value={update.number}
-            onChange={handleChange}
-          />
-          <button id="add-btn" type="submit" onClick={(e) => handleUpdate(e)}>
-            Update
-          </button>
-        </form>
-      </div>
-      {data.map((item, index) => {
-        return (
-          <div key={index}>
+    <div className="App position-relative">
+      <nav className="navbar navbar-dark bg-dark  fixed-top ">
+        <h1 className="display-4">ToDo List</h1>
+      </nav>
+      <div className="main">
+        <div className="form_container  position-fixed ">
+          <form className="new_task_form ">
             <div>
-              <p>
-                <b>No. </b> : {index + 1}
-              </p>
+              <h1 className="display-5">New Task</h1>
             </div>
-            <div>
-              <p>
-                <b>Id </b> : {item.id}
-              </p>
+            <div className="form-floating mb-3">
+              <input
+                type="text"
+                className="form-control"
+                id="floatingInput"
+                placeholder="What do you need to do ?"
+                name="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+              <label v-for="floatingInput">What do you need to do ?</label>
             </div>
-            <div>
-              <p>
-                <b>Task </b> : {item.title}
-              </p>
-            </div>
-            <div>
-              <p>
-                <b>Completed</b> : {item.completed === false ? "False" : "True"}
-              </p>
-            </div>
-            <div>
-              <button onClick={() => handleDelete(item.id, index)}>
-                Delete
+
+            <div className="d-grid gap-2 col-6 mx-auto">
+              <button
+                className="btn btn-primary"
+                id="add-btn"
+                type="submit"
+                onClick={(e) => handleCreate(e)}
+              >
+                Add a task
               </button>
             </div>
-          </div>
-        );
-      })}
+          </form>
+          <hr />
+          <form className="update_task_container">
+            <div>
+              <h1 className="display-5">Update Task</h1>
+            </div>
+            <div className="form-floating mb-3">
+              <input
+                className="form-control"
+                id="des-input"
+                type="text"
+                name="description"
+                value={update.description}
+                onChange={handleChange}
+                placeholder="What's the update"
+                required
+              />
+              <label v-for="floatingInput">What's the update</label>
+            </div>
+            <div className="form-floating mb-3">
+              <input
+                className="form-control"
+                id="des-input"
+                type="number"
+                name="id"
+                placeholder="Enter Task No :"
+                value={update.id}
+                onChange={handleChange}
+                required
+              />
+              <label v-for="floatingInput">Enter Task No : </label>
+            </div>
+            <div className="form-floating mb-3">
+              <input
+                className="form-control"
+                id="des-input"
+                type="number"
+                name="number"
+                placeholder="Enter Task ID :"
+                value={update.number}
+                onChange={handleChange}
+                required
+              />
+              <label v-for="floatingInput">Enter Task ID : </label>
+            </div>
+            <div className="d-grid gap-2 col-6 mx-auto">
+              <button
+                className="btn btn-primary"
+                id="add-btn"
+                type="submit"
+                onClick={(e) => handleUpdate(e)}
+              >
+                Update
+              </button>
+            </div>
+          </form>
+        </div>
+        <div className="display_container ">
+          {data.map((item, index) => {
+            return (
+              <div className="card card_item" key={index}>
+                <div className="card-header card_header_no_id">
+                  <h5 className="display-6">Task No : {index + 1}</h5>
+                  <p>
+                    <b>ID </b> : {item.id}
+                  </p>
+                </div>
+                <div className="card-body">
+                  <div>
+                    <h4 className="card-title">Task : {item.title}</h4>
+                  </div>
+                  <div>
+                    <p className="card-text ">
+                      Completed : {item.completed === false ? "False" : "True"}
+                    </p>
+                  </div>
+                  <div className="delete_btn_container">
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={() => handleDelete(item.id, index)}
+                    >
+                      Complete / Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
