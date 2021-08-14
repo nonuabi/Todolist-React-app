@@ -187,20 +187,6 @@ function App() {
               />
               <label v-for="floatingInput">What's the update</label>
             </div>
-            {/* update task id input tag */}
-            <div className="form-floating mb-3">
-              <input
-                className="form-control"
-                id="des-input"
-                type="number"
-                name="id"
-                placeholder="Enter Task No :"
-                value={update.id}
-                onChange={handleChange}
-                required
-              />
-              <label v-for="floatingInput">Enter Task No : </label>
-            </div>
             {/* update task number input tag */}
 
             <div className="form-floating mb-3">
@@ -209,13 +195,28 @@ function App() {
                 id="des-input"
                 type="number"
                 name="number"
-                placeholder="Enter Task ID :"
+                placeholder="Enter Task No. :"
                 value={update.number}
+                onChange={handleChange}
+                required
+              />
+              <label v-for="floatingInput">Enter Task No : </label>
+            </div>
+            {/* update task id input tag */}
+            <div className="form-floating mb-3">
+              <input
+                className="form-control"
+                id="des-input"
+                type="number"
+                name="id"
+                placeholder="Enter Task ID :"
+                value={update.id}
                 onChange={handleChange}
                 required
               />
               <label v-for="floatingInput">Enter Task ID : </label>
             </div>
+
             {/* update task submit button */}
             <div className="d-grid gap-2 col-6 mx-auto">
               <button
